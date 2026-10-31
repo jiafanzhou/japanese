@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>日语重启计划 · 学习进度</title>
+<style>
+  :root{
+    --bg:#faf8f5; --card:#fff; --ink:#2b2a28; --muted:#7a766f; --line:#e6e1d8;
+    --accent:#c0392b; --done:#2e8b57; --doneBg:#e6f4ec; --warn:#b7791f; --warnBg:#fdf3e1;
+    --todo:#9aa0a6; --todoBg:#f2f2f0; --today:#c0392b; --todayBg:#fdecea; --rest:#5b6bbf; --restBg:#eceffb;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#1b1a19; --card:#252422; --ink:#ece8e1; --muted:#a39e95; --line:#3a3835;
+      --doneBg:#1f3a2b; --warnBg:#3d3120; --todoBg:#2e2d2b; --todayBg:#45221f; --restBg:#262c47; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 -apple-system,"PingFang SC","Microsoft YaHei","Hiragino Sans",sans-serif}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 80px}
+  h1{font-size:28px;margin:0 0 4px}
+  h2{font-size:19px;margin:36px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+  .sub{color:var(--muted);margin:0 0 20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .tile .k{color:var(--muted);font-size:13px}
+  .tile .v{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+  .tile .n{color:var(--muted);font-size:12px}
+  .bar{height:8px;background:var(--todoBg);border-radius:4px;overflow:hidden;margin-top:6px}
+  .bar>i{display:block;height:100%;background:var(--done)}
+  .today{border-left:5px solid var(--today)}
+  .today ol{margin:8px 0 0;padding-left:22px}
+  .today li{margin:4px 0}
+  .tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:10px;margin-left:6px;vertical-align:middle}
+  .t-done{background:var(--doneBg);color:var(--done)} .t-today{background:var(--todayBg);color:var(--today)}
+  .t-todo{background:var(--todoBg);color:var(--muted)} .t-rest{background:var(--restBg);color:var(--rest)}
+  .t-warn{background:var(--warnBg);color:var(--warn)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:13px}
+  tr.is-today td{background:var(--todayBg)}
+  tr.is-done td{color:var(--muted)}
+  .phase-row td{background:var(--todoBg);font-weight:700;color:var(--ink)}
+  .grid{display:grid;grid-template-columns:56px repeat(5,1fr);gap:4px;max-width:520px}
+  .grid div{text-align:center;padding:6px 0;border-radius:6px}
+  .grid .h{color:var(--muted);font-size:12px;padding:4px 0}
+  .kana{font-size:22px;font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;border:1px solid var(--line)}
+  .s-ok{background:var(--doneBg);color:var(--done);border-color:transparent}
+  .s-check{background:var(--warnBg);color:var(--warn);border-color:transparent}
+  .s-new{background:var(--card);color:var(--todo)}
+  .s-none{border:none}
+  .legend span{display:inline-flex;align-items:center;gap:6px;margin-right:16px;font-size:13px;color:var(--muted)}
+  .legend b{width:14px;height:14px;border-radius:3px;display:inline-block}
+  .road{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+  .road .card{padding:14px}
+  .road .when{color:var(--accent);font-weight:700;font-size:13px}
+  .road h3{margin:2px 0 6px;font-size:16px}
+  .road p{margin:0;font-size:13px;color:var(--muted)}
+  .rules li{margin:6px 0}
+  code{background:var(--todoBg);padding:1px 6px;border-radius:4px;font-size:13px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:720px){.cols{grid-template-columns:1fr}}
+  .foot{margin-top:40px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>日语学习 · 重启计划</h1>
+<p class="sub">第一轮 2026-08-24 → 08-29（6 节课，学到 た/て/と）· 中断 63 天 · <b>2026-10-31 重启 Day 1</b></p>
+
+<!-- ============ 概览 ============ -->
+<div class="tiles" id="tiles"></div>
+
+<!-- ============ 今天 ============ -->
+<h2>今天要做什么</h2>
+<div class="card today" id="today"></div>
+
+<!-- ============ 时间 ============ -->
+<h2>每天学多久</h2>
+<div class="cols">
+  <div class="card">
+    <b>三档时长（按当天状态选一档，不用纠结）</b>
+    <table style="margin-top:8px">
+      <tr><th>档位</th><th>时长</th><th>什么时候用</th></tr>
+      <tr><td><b>标准</b></td><td><b>20 分钟</b></td><td>默认。日程表里每一天都按这个设计</td></tr>
+      <tr><td>加强</td><td>20 + 10 分钟</td><td>状态好、想多学 → 加一段「被动听」，<b>不加新字</b></td></tr>
+      <tr><td>保底</td><td>5 分钟</td><td>很忙 / 很累 → 说「只复习，不学新的」，<b>不算断</b></td></tr>
+    </table>
+    <p style="margin:10px 0 0;color:var(--muted);font-size:13px">
+      假名关：每周约 <b>2 小时</b>（6 天 × 20 分钟），25 天合计约 <b>8 小时</b>。<br>
+      进入 N5（11-25 起）：标准档升到 <b>30～45 分钟</b>，届时另排。
+    </p>
+  </div>
+  <div class="card">
+    <b>标准 20 分钟怎么分配（每节课固定四段）</b>
+    <table style="margin-top:8px">
+      <tr><th style="width:80px">时间</th><th>做什么</th></tr>
+      <tr><td>0～5 分</td><td><b>① 复习考</b>：考上次的字（认读 + 默写），全对才往下</td></tr>
+      <tr><td>5～12 分</td><td><b>② 新内容</b>：字源 → 发音要点 → 和旧字的对比</td></tr>
+      <tr><td>12～18 分</td><td><b>③ 动手写</b>：每个新字手写 3 遍，边写边出声；网格挂载题</td></tr>
+      <tr><td>18～20 分</td><td><b>④ 收尾</b>：Claude 批改，更新进度和本页</td></tr>
+      <tr><td style="color:var(--muted)">+10 分</td><td style="color:var(--muted)">（加强档）通勤/睡前听 NHK やさしい日本語 或 いろどり 音频，不用看懂</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ============ 假名网格 ============ -->
+<h2>平假名掌握情况</h2>
+<div class="card">
+  <div class="legend" style="margin-bottom:12px">
+    <span><b style="background:var(--doneBg);border:1px solid var(--done)"></b>已验收</span>
+    <span><b style="background:var(--warnBg);border:1px solid var(--warn)"></b>学过 · 待摸底</span>
+    <span><b style="background:var(--card);border:1px solid var(--line)"></b>未学</span>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<!-- ============ 日程 ============ -->
+<h2>重启日程：假名关（25 天，到 11-24）</h2>
+<p class="sub" style="margin-bottom:10px">标准档每天 20 分钟（缓冲日 15 分钟），全程约 8 小时。<b>日期是参考，不是死线</b> —— 没通过就顺延，宁可慢，不可停。</p>
+<div class="card" style="padding:6px 12px"><table id="sched"></table></div>
+
+<!-- ============ 路线图 ============ -->
+<h2>长期路线图（按每天 30～45 分钟估）</h2>
+<div class="road">
+  <div class="card"><div class="when">10-31 → 11-24</div><h3>① 假名关</h3><p>平/片假名读写自如，含浊音、拗音、促音、长音</p></div>
+  <div class="card"><div class="when">11-25 → 2027-03</div><h3>② N5</h3><p>数字时间、これ/それ/あれ、Aは Bです、ます形、助词、形容词、存在句</p></div>
+  <div class="card"><div class="when">2027-04 → 2027-10</div><h3>③ N4</h3><p>て形/た形/ない形、可能/意志、授受、条件句、简体敬体切换</p></div>
+  <div class="card"><div class="when">2027-11 → 2028 下半年</div><h3>④ N3</h3><p>被动/使役、敬语入门、长文阅读、听懂日常对话大意</p></div>
+</div>
+
+<!-- ============ 规则 ============ -->
+<h2>这次不再断：防中断规则</h2>
+<div class="cols">
+  <div class="card">
+    <b>学习者这边</b>
+    <ol class="rules">
+      <li><b>最低版本 = 5 分钟。</b>再忙也打开说一句「只复习，不学新的」。连续不断比学得多重要。</li>
+      <li><b>断一天不补课。</b>第二天照常进度，不加量 —— 补课的压力正是下一次中断的原因。</li>
+      <li><b>断 3 天以上</b>，回来第一句说「我回来了」，先做 5 分钟摸底，由 Claude 决定从哪接。</li>
+      <li><b>固定时间锚点。</b>挂在一件每天必做的事后面（例：早饭后 / 下班到家）。</li>
+      <li><b>手边放本子和笔。</b>假名阶段不动手写，记不牢。</li>
+    </ol>
+  </div>
+  <div class="card">
+    <b>Claude 这边（第一轮已验证有效的教学铁律）</b>
+    <ol class="rules">
+      <li>每节课<b>先考上次的</b>，通过才给新内容。</li>
+      <li>新字当天只做「<b>行内闭环 + 一组对比</b>」，全表混合推到隔天。</li>
+      <li><b>加字前先爬阶梯</b>：一次只加一行做混合，定位干扰点。</li>
+      <li>易混字结案必须<b>两个方向分别验</b>（形→音、音→形）。</li>
+      <li>反向题一律「罗马音→假名」，假名阶段<b>不背单词</b>。</li>
+      <li>每节课控制在 20 分钟以内，<b>主动停在状态好的时候</b>，不压疲劳。</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ============ 日志 ============ -->
+<h2>课程日志（重启后）</h2>
+<div class="card" style="padding:6px 12px"><table id="log"></table></div>
+
+<h2>怎么开始每天的课</h2>
+<div class="card">
+  在本目录打开 Claude Code，说：<code>读一下 进度.md，继续上课</code><br>
+  上完课 Claude 会更新 <code>进度.md</code> / <code>错题本.md</code> / <code>生词本.md</code>，并刷新这个页面。<br>
+  音源：<b>いろどり</b> irodori.jpf.go.jp ・ <b>NHK やさしい日本語</b> ・ <b>OJAD</b> 音高词典 ・ <b>Forvo</b> 查发音
+</div>
+
+<p class="foot" id="foot"></p>
+</div>
+
+<script>
+/* =====================================================================
+   数据区 —— 每次课后由 Claude 更新这里，页面自动重绘
+   status: done(已完成) | today(今天) | todo(未开始) | rest(缓冲/复习)
+   ===================================================================== */
+const STATE = {
+  updated: "2026-10-31",
+  today:   "2026-10-31",
+  restartDate: "2026-10-31",
+  totalMinutes: 0,          // 重启后累计分钟
+  streak: 0,                // 当前连续天数（完成当天课后 +1）
+
+  // 平假名状态：ok=已验收  check=学过待摸底  new=未学
+  kana: {
+    ok:    "",
+    check: "あいうえおかきくけこさしすせそたてと",
+  },
+  katakanaOk: 0,
+
+  todayPlan: {
+    title: "R1 · 摸底诊断（15 分钟）",
+    why: "停了两个月，先别学新的。用 15 分钟测出「还剩多少」，再决定后面几天回炉多少 —— 记得的跳过，忘了的重讲。忘光了也完全正常。",
+    steps: [
+      "<b>0～4 分 · 认读</b>：18 个学过的字（あ/か/さ 行 + た/て/と）打乱，看字读音",
+      "<b>4～9 分 · 默写</b>：听罗马音写假名，含空网格默写（あ/か/さ 三行）",
+      "<b>9～12 分 · 网格坐标</b>：「か行え段 = ?」「そ 在哪一格?」",
+      "<b>12～14 分 · 字源串</b>：安以宇衣於 / 加幾久計己 / 左之寸世曽 还记得多少",
+      "<b>14～15 分 · 收尾</b>：Claude 根据结果把 R2～R3 定为「回炉」或「跳过」，并更新本页"
+    ]
+  },
+
+  schedule: [
+    {phase:"A · 回炉旧字 + 补完た行"},
+    {d:"10-31", w:"六", id:"R1",  t:"摸底诊断：18 个旧字认读 / 默写 / 网格 / 字源", m:15, s:"today"},
+    {d:"11-01", w:"日", id:"R2",  t:"回炉 あ行 + か行（摸底全对则跳过）", m:20, s:"todo"},
+    {d:"11-02", w:"一", id:"R3",  t:"回炉 さ行 + た/て/と（摸底全对则跳过）", m:20, s:"todo"},
+    {d:"11-03", w:"二", id:"R4",  t:"新：ち / つ（破格 chi / tsu）＋ さ/ち 弯向对比", m:20, s:"todo"},
+    {d:"11-04", w:"三", id:"R5",  t:"20 字全表混合验收：计时闪读 + 空网格默写", m:20, s:"todo"},
+    {phase:"B · 平假名后半"},
+    {d:"11-05", w:"四", id:"R6",  t:"な行 なにぬねの", m:20, s:"todo"},
+    {d:"11-06", w:"五", id:"R7",  t:"は行 はひふへほ（ふ 双唇轻擦，不是 f）", m:20, s:"todo"},
+    {d:"11-07", w:"六", id:"R8",  t:"缓冲日：30 字阶梯混合（一次加一行）", m:15, s:"rest"},
+    {d:"11-08", w:"日", id:"R9",  t:"ま行 まみむめも", m:20, s:"todo"},
+    {d:"11-09", w:"一", id:"R10", t:"や行 やゆよ（3 个，轻松）", m:20, s:"todo"},
+    {d:"11-10", w:"二", id:"R11", t:"ら行 らりるれろ", m:20, s:"todo"},
+    {d:"11-11", w:"三", id:"R12", t:"わ/を/ん ＋ ま～ら行隔天混合", m:20, s:"todo"},
+    {d:"11-12", w:"四", id:"R13", t:"缓冲日：平假名 46 字全表复习", m:15, s:"rest"},
+    {d:"11-13", w:"五", id:"R14", t:"浊音 / 半浊音（が ざ だ ば ぱ）—— 先复验「假名=辅音+元音」", m:20, s:"todo"},
+    {d:"11-14", w:"六", id:"R15", t:"拗音 きゃ・促音 っ・长音", m:20, s:"todo"},
+    {d:"11-15", w:"日", id:"R16", t:"平假名验收（计时全表 + 真词串读）", m:20, s:"todo"},
+    {phase:"C · 片假名（音已会，只认形，可以快）"},
+    {d:"11-16", w:"一", id:"R17", t:"ア～コ（10 个）", m:20, s:"todo"},
+    {d:"11-17", w:"二", id:"R18", t:"サ～ト", m:20, s:"todo"},
+    {d:"11-18", w:"三", id:"R19", t:"ナ～ホ", m:20, s:"todo"},
+    {d:"11-19", w:"四", id:"R20", t:"缓冲日：ア～ホ 混合 + シ/ツ、ソ/ン 专项", m:15, s:"rest"},
+    {d:"11-20", w:"五", id:"R21", t:"マ～ヨ", m:20, s:"todo"},
+    {d:"11-21", w:"六", id:"R22", t:"ラ～ン", m:20, s:"todo"},
+    {d:"11-22", w:"日", id:"R23", t:"外来语拼写规则（ー 长音、ティ/ファ 等）", m:20, s:"todo"},
+    {d:"11-23", w:"一", id:"R24", t:"平片混合复习", m:15, s:"rest"},
+    {d:"11-24", w:"二", id:"R25", t:"🎯 假名关总验收", m:25, s:"todo"},
+    {phase:"D · 进入 N5"},
+    {d:"11-25", w:"三", id:"N5-1", t:"数字 + これ/それ/あれ + Aは Bです", m:20, s:"todo"},
+  ],
+
+  log: [
+    {d:"2026-10-31", c:"重启 Day 1：制定新计划 + 生成本页面", r:"—", n:"中断 63 天后回归。今天做摸底诊断，结果出来后更新"},
+  ],
+};
+
+/* ============================ 渲染 ============================ */
+const $ = id => document.getElementById(id);
+const ROWS = [
+  ["あ行","あいうえお"],["か行","かきくけこ"],["さ行","さしすせそ"],["た行","たちつてと"],
+  ["な行","なにぬねの"],["は行","はひふへほ"],["ま行","まみむめも"],["や行","や・ゆ・よ"],
+  ["ら行","らりるれろ"],["わ行","わ・・をん"],
+];
+const items = STATE.schedule.filter(x=>x.id);
+const doneN = items.filter(x=>x.s==="done").length;
+const okN = [...STATE.kana.ok].length, chkN = [...STATE.kana.check].length;
+const days = Math.round((new Date(STATE.today)-new Date(STATE.restartDate))/864e5)+1;
+const pct = (a,b)=>Math.round(a/b*100);
+
+$("tiles").innerHTML = [
+  ["重启第几天", days, `从 ${STATE.restartDate} 起`, null],
+  ["假名关日程", `${doneN}/${items.length-1}`, "R1～R25", pct(doneN,items.length-1)],
+  ["平假名已验收", `${okN}/46`, `另有 ${chkN} 个待摸底`, pct(okN,46)],
+  ["片假名已验收", `${STATE.katakanaOk}/46`, "11-16 开始", pct(STATE.katakanaOk,46)],
+  ["连续打卡", `${STATE.streak} 天`, `累计 ${STATE.totalMinutes} 分钟`, null],
+].map(([k,v,n,p])=>`<div class="card tile"><div class="k">${k}</div><div class="v">${v}</div><div class="n">${n}</div>${p!==null?`<div class="bar"><i style="width:${p}%"></i></div>`:""}</div>`).join("");
+
+const tp = STATE.todayPlan;
+$("today").innerHTML = `<b style="font-size:17px">${tp.title}</b><span class="tag t-today">${STATE.today}</span>
+  <p style="margin:8px 0 0;color:var(--muted)">${tp.why}</p><ol>${tp.steps.map(s=>`<li>${s}</li>`).join("")}</ol>`;
+
+let g = `<div class="h"></div>` + ["あ段","い段","う段","え段","お段"].map(x=>`<div class="h">${x}</div>`).join("");
+for (const [name, chars] of ROWS){
+  g += `<div class="h">${name}</div>`;
+  for (const ch of chars){
+    if (ch==="・"){ g += `<div class="s-none"></div>`; continue; }
+    const cls = STATE.kana.ok.includes(ch) ? "s-ok" : STATE.kana.check.includes(ch) ? "s-check" : "s-new";
+    g += `<div class="kana ${cls}">${ch}</div>`;
+  }
+}
+$("grid").innerHTML = g;
+
+const TAG = {done:["t-done","✓ 完成"], today:["t-today","今天"], todo:["t-todo","未开始"], rest:["t-rest","缓冲"]};
+$("sched").innerHTML = `<tr><th style="width:70px">日期</th><th style="width:30px"></th><th style="width:56px">课</th><th>内容</th><th style="width:60px">时长</th><th style="width:80px">状态</th></tr>` +
+  STATE.schedule.map(x=> x.phase
+    ? `<tr class="phase-row"><td colspan="6">${x.phase}</td></tr>`
+    : `<tr class="${x.s==="today"?"is-today":x.s==="done"?"is-done":""}"><td>${x.d}</td><td>${x.w}</td><td><b>${x.id}</b></td><td>${x.t}</td><td>${x.m} 分</td><td><span class="tag ${TAG[x.s][0]}" style="margin:0">${TAG[x.s][1]}</span></td></tr>`
+  ).join("");
+
+$("log").innerHTML = `<tr><th style="width:100px">日期</th><th>内容</th><th style="width:90px">正确率</th><th>备注</th></tr>` +
+  STATE.log.map(x=>`<tr><td>${x.d}</td><td>${x.c}</td><td>${x.r}</td><td>${x.n}</td></tr>`).join("");
+
+$("foot").textContent = `最后更新：${STATE.updated} ・ 第一轮（2026-08）的详细日志见 进度.md`;
+</script>
+</body>
+</html>
